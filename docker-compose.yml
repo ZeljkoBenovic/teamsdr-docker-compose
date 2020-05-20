@@ -1,0 +1,74 @@
+version: '3.4'
+
+services: 
+
+    letsencrypt:
+        image: linuxserver/letsencrypt:latest
+        cap_add:
+          - NET_ADMIN
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=Europe/Belgrade
+          - URL= #your root domain
+          - SUBDOMAINS= #your subdomain (sbc)
+          - VALIDATION=http
+          - EMAIL= #optional
+          - DHLEVEL=2048 #optional
+          - ONLY_SUBDOMAINS=true #optional
+          - EXTRA_DOMAINS= #optional
+          - STAGING=false #optional
+        volumes:
+          - ./letsencrypt:/config
+        ports:
+          - 443:443
+          - 80:80 #optional
+        restart: unless-stopped
+        network_mode: host
+
+    kamailio:
+        image: 'zeljkoiphouse/kamailio:latest'
+        depends_on: 
+            - rtpengine
+        volumes:
+            - ./kamcfg:/etc/kamailio
+            - ./letsencrypt/etc/letsencrypt:/cert
+            - ./sipdump:/tmp
+        restart: unless-stopped
+        environment: 
+            NEW_CONFIG: 'true'  #if you would like new config files - setting it to true will overwrite your own config files
+            EN_SIPDUMP: 'true' #for debuging - your sip capture files will be in sipdump folder
+            ADVERTISE_IP: # public ip you would like to advertize
+            ALIAS: # public fqdn of your sbc
+            SBC_NAME: # public fqdn of your sbc
+            SBC_PORT: # tls port of your sbc
+            HOST_IP: # the docker host - needed for proper rtp addresing
+            PBX_IP: # pbx ip you are connecting to Teams DR
+            PBX_PORT: # sip port of the above pbx
+            RTP_ENG_IP: # usualy the name of rtpengine container (rtpengine in this case)
+            RTP_ENG_PORT: '22222' #hardcoded rtp init port
+        ports:
+            - 5060:5060/udp
+            - 5061:5061/tcp
+        networks:
+            - 'kam'
+
+
+    rtpengine:
+        image: 'zeljkoiphouse/rtpengine:latest'
+        restart: unless-stopped
+        environment: 
+            RTP_MAX: '23000' # start port for rtpengine RTP 
+            RTP_MIN: '23500' # end port for rtpengine RTP 
+            # open these ports as low as possible, as docker has slow performanse in opening a lot of ports
+        ports:
+            - 23000-23500:23000-23500/udp # set these acordingly to the above environment
+        expose: 
+            - 22222/udp
+        networks: 
+            - 'kam'
+
+networks: 
+    kam:
+
+            
