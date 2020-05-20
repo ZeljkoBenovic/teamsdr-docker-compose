@@ -9,7 +9,7 @@ services:
         environment:
           - PUID=1000
           - PGID=1000
-          - TZ=Europe/Belgrade
+          - TZ=Europe/Belgrade #set time zone
           - URL= #your root domain
           - SUBDOMAINS= #your subdomain (sbc)
           - VALIDATION=http
