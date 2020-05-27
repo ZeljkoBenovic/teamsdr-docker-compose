@@ -43,6 +43,7 @@ services:
             SBC_NAME: # public fqdn of your sbc
             SBC_PORT: # tls port of your sbc
             HOST_IP: # the docker host - needed for proper rtp addresing
+            UDP_SIP_PORT: # udp sip listen port for sip to pbx
             PBX_IP: # pbx ip you are connecting to Teams DR
             PBX_PORT: # sip port of the above pbx
             RTP_ENG_IP: # usualy the name of rtpengine container (rtpengine in this case)
