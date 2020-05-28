@@ -51,8 +51,7 @@ services:
         ports:
             - 5060:5060/udp
             - 5061:5061/tcp
-        networks:
-            - 'kam'
+        network_mode: host
 
 
     rtpengine:
@@ -68,10 +67,6 @@ services:
             - 23000-23500:23000-23500/udp # set these acordingly to the above environment
         expose: 
             - 22222/udp
-        networks: 
-            - 'kam'
-
-networks: 
-    kam:
+        network_mode: host
 
             
