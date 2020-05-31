@@ -69,4 +69,5 @@ services:
             - 22222/udp
         network_mode: host
 
-            
+### if you are adding additional domains to letsencrypt container, you need to mount the same volume to the other containers (./letsencrypt/etc/letsencrypt:/cert)
+#### and you need to create additional symlinks (ln -s) in ./letsencrypt/etc/letsencrypt/live folder corresponding to your sbc fqdn name
