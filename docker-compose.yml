@@ -20,9 +20,6 @@ services:
           - STAGING=false #optional
         volumes:
           - ./letsencrypt:/config
-        ports:
-          - 443:443
-          - 80:80 #optional
         restart: unless-stopped
         network_mode: host
 
@@ -48,9 +45,6 @@ services:
             PBX_PORT: # sip port of the above pbx
             RTP_ENG_IP: # usualy the name of rtpengine container (rtpengine in this case)
             RTP_ENG_PORT: '22222' #hardcoded rtp init port
-        ports:
-            - 5060:5060/udp
-            - 5061:5061/tcp
         network_mode: host
 
 
@@ -58,15 +52,11 @@ services:
         image: 'zeljkoiphouse/rtpengine:latest'
         restart: unless-stopped
         environment: 
+            # open these ports as low as possible, as docker has slow performanse in opening a lot of ports
             RTP_MAX: '23500' # start port for rtpengine RTP 
             RTP_MIN: '23000' # end port for rtpengine RTP 
             MEDIA_PUB_IP: # public IP of your rtpengine
-            NG_LISTEN: '22222' # port for comunication to Kamailio
-            # open these ports as low as possible, as docker has slow performanse in opening a lot of ports
-        ports:
-            - 23000-23500:23000-23500/udp # set these acordingly to the above environment
-        expose: 
-            - 22222/udp
+            NG_LISTEN: '22222' # port for comunication to Kamailio            
         network_mode: host
 
 ### if you are adding additional domains to letsencrypt container, you need to mount the same volume to the other containers (./letsencrypt/etc/letsencrypt:/cert)
